@@ -9,8 +9,14 @@ https://www.youtube.com/watch?v=g2FlXCSy0yI
 http://www.htmq.com/canvas/002.shtml
 
 ■Canvasリファレンス
+
 　rect(x, y, w, h)　>>　四角形を作成する
+
 　arc(x, y, radius, startAngle, endAngle [, anticlockwise ] )　>>　円を作成する
 
+　clearRect(x, y, w, h)　>>　四角形の形にクリアする
 
+■JavaScriptリファレンス
+
+　setInterval（func, time)　>>　"func"を指定した間隔(time)で繰り返す
 

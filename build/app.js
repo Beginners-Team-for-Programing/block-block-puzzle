@@ -13,13 +13,28 @@ var y = canvas.height - 30;
 var dx = 2;
 var dy = -2;
 
-function draw()
-{
+function drawBall() {
     ctx.beginPath();
-    ctx.arc(x, y, 20, 0, Math.PI * 2, false);
+    ctx.arc(x, y, 10, 0, Math.PI * 2, false);
     ctx.fillStyle = "green";
     ctx.fill();
     ctx.closePath();
+}
+
+function draw()
+{
+    ctx.clearRect(0, 0, canvas.width, canvas.height);   // Canvas全体の描画をクリア
+    drawBall();                                         // Canvasに球を描画
+
+    if(y + dy > canvas.height || y + dy < 0)    //y方向でcanvasの端にぶつかると、進行方向を変える
+    {
+        dy = -dy;
+    }
+    if(x + dx > canvas.width || x + dx < 0)     // x方向でcanvasの端にぶつかると、進行方向を変える
+    {
+        dx = -dx;
+    }
+
 
     x += dx;
     y += dy;
