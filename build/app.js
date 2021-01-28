@@ -3,7 +3,6 @@
 // https://www.sejuku.net/blog/66950
 // require('css/app.css');
 
-
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 
@@ -13,38 +12,72 @@ var y = canvas.height - 30;
 var dx = 2;
 var dy = -2;
 
-function drawBall() {
-    ctx.beginPath();
-    ctx.arc(x, y, 10, 0, Math.PI * 2, false);
-    ctx.fillStyle = "green";
-    ctx.fill();
-    ctx.closePath();
-}
+var ballRadius = 10;
 
+var paddleX = 10;
+var paddleWidth = 100;      
+var paddleHeight = 5;
+
+// 指定間隔で画面描写の関数を呼び出す
+setInterval(draw, 10);
+
+// 画面描写の関数
 function draw()
 {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);   // Canvas全体の描画をクリア
-    drawBall();                                         // Canvasに球を描画
+    addEventListener("keydown", keydownfunc);
 
-    if(y + dy > canvas.height || y + dy < 0)    //y方向でcanvasの端にぶつかると、進行方向を変える
+    ctx.clearRect(0, 0, canvas.width, canvas.height);   // Canvas全体の描画をクリア
+    drawBall();     // Canvasにボールを描画
+    drawPaddle();   // Canvasにパドルを描画
+
+    if(y + dy > canvas.height - ballRadius || y + dy < ballRadius)    //y方向でcanvasの端にぶつかると、進行方向を変える
     {
         dy = -dy;
     }
-    if(x + dx > canvas.width || x + dx < 0)     // x方向でcanvasの端にぶつかると、進行方向を変える
+    if(x + dx > canvas.width - ballRadius || x + dx < ballRadius)     // x方向でcanvasの端にぶつかると、進行方向を変える
     {
         dx = -dx;
     }
-
 
     x += dx;
     y += dy;
 
 }
 
-setInterval(draw, 10);
+// ボールを描画するメソッド
+function drawBall() 
+{
+    ctx.beginPath();
+    ctx.arc(x, y, ballRadius, 0, Math.PI * 2, false);
+    ctx.fillStyle = "#0095DD";
+    ctx.fill();
+    ctx.closePath();
+}
 
+// パドルを描画するメソッド
+function drawPaddle()
+{
+    ctx.beginPath();
+    ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+    ctx.fillStyle = "#0095DD";
+    ctx.fill();
+    ctx.closePath();
+}
 
+// キー押下時のイベント
+function keydownfunc( event )
+{
+    var key_code = event.keyCode;
 
+    if (key_code == 37)
+    {
+        if (paddleX > 0) paddleX -=20;
+    }
+    if (key_code == 39)
+    {
+        if (paddleX < canvas.width - paddleWidth) paddleX +=20;
+    } 
+}
 
 
 
