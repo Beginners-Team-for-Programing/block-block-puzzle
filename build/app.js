@@ -18,6 +18,8 @@ var paddleX = 10;
 var paddleWidth = 100;      
 var paddleHeight = 5;
 
+var interval = setInterval(draw, 10);
+
 // 指定間隔で画面描写の関数を呼び出す
 setInterval(draw, 10);
 
@@ -30,11 +32,15 @@ function draw()
     drawBall();     // Canvasにボールを描画
     drawPaddle();   // Canvasにパドルを描画
 
-    if(y + dy > canvas.height - ballRadius || y + dy < ballRadius)    //y方向でcanvasの端にぶつかると、進行方向を変える
+    if(y + dy < ballRadius)    //y方向でcanvasの端にぶつかると、進行方向を変える
     {
         dy = -dy;
+    } else if (y + dy > canvas.height - ballRadius) {
+        alert("GAME OVER");
+        document.location.reload();
+        clearIntervel(interval);
     }
-    if(x + dx > canvas.width - ballRadius || x + dx < ballRadius)     // x方向でcanvasの端にぶつかると、進行方向を変える
+        if (x + dx > canvas.width - ballRadius || x + dx < ballRadius)     // x方向でcanvasの端にぶつかると、進行方向を変える
     {
         dx = -dx;
     }
