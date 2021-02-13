@@ -20,3 +20,5 @@ http://www.htmq.com/canvas/002.shtml
 
 　setInterval（func, time)　>>　"func"を指定した間隔(time)で繰り返す
 
+■TODO
+・変数は別のファイルから呼び出す形にしたい
