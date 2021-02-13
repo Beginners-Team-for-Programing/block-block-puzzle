@@ -28,10 +28,13 @@ var brickOffsetLeft = 30;
 
 // それぞれのブロックの位置を保存する配列を生成
 var bricks = [];
-for(var row = 0; row < brickRowCount; row++) {
-    bricks[row] = [];
-    for(var column = 0; column < brickColumnCount; column++) {
-        bricks[row][column] = { x: 0, y: 0 };
+for(var column = 0; column < brickColumnCount; column++)
+{
+    bricks[column] = [];
+
+    for(var row = 0; row < brickRowCount; row++)
+    {
+        bricks[column][row] = { x: 0, y: 0, status: 1};
     }
 }
 
@@ -46,38 +49,46 @@ function draw()
     drawBall();     // Canvasにボールを描画
     drawSquare(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight, "#0095DD");   // Canvasにパドルを描画
 
-    // Ckkanvasにブロックを描画する処理
-    for(row = 0; row < brickRowCount; row++)
+    drawbricks();    // Canvasにブロックを描画する処理
+
+    // ボールとブロックの衝突をチェックする処理
+    for(column = 0; column < brickColumnCount; column++)
     {
-         // ブロックのY方向の位置情報を更新
-        var brickY = brickOffsetTop + row * (brickHeight + brickPadding);
-        for(column = 0; column < brickColumnCount; column++)
+        for(row = 0; row < brickRowCount; row++)
         {
-            // ブロックのX方向の位置情報を更新
-            var brickX = brickOffsetLeft + column * (brickWidth + brickPadding);
-            // Canvasにブロックを描画
-            drawSquare(brickX, brickY, brickWidth, brickHeight, "#0095DD");
-            bricks[row][column].x = brickX;
-            bricks[row][column].y = brickY;
+            // ブロックの上辺もしくは下辺に衝突した場合　>>　ボールの進行方向を反転(Y方向)
+            if(x > bricks[column][row].x && x < bricks[column][row].x + brickWidth && y > bricks[column][row].y && y <  bricks[column][row].y + brickHeight)
+            {
+                    dy = -dy;
+                    bricks[column][row].status = 0
+            }
         }
+
     }
 
     if(y + dy < ballRadius)    //y方向でcanvasの端にぶつかると、進行方向を変える
     {
         dy = -dy;
-    } else if (y + dy > canvas.height - ballRadius)
+    }
+    else if (y + dy > canvas.height - ballRadius)
     {
-        if (x > paddleX && x < paddleX + paddleWidth) {
+        if (x > paddleX && x < paddleX + paddleWidth)
+        {
             dy = -dy;
-        } else {
-            
-            alert("GAME OVER");
-            document.location.reload();
-            clearInterval(interval);
+        }
+        else
+        {
+            // デバッグ中のみ使用　最後は修正する
+            dy = -dy;
+            // alert("GAME OVER");
+            // document.location.reload();
+            // clearInterval(interval);
         }
         
     }
-        if (x + dx > canvas.width - ballRadius || x + dx < ballRadius)     // x方向でcanvasの端にぶつかると、進行方向を変える
+
+    // x方向でcanvasの端にぶつかると、進行方向を変える
+    if (x + dx > canvas.width - ballRadius || x + dx < ballRadius)
     {
         dx = -dx;
     }
@@ -87,7 +98,27 @@ function draw()
 
 }
 
+function drawbricks()
+{
+    for(column = 0; column < brickColumnCount; column++)
+    {
+        for(row = 0; row < brickRowCount; row++)
+        {
+            if( bricks[column][row].status == 1)
+            {
+                // ブロックの位置情報を更新
+                var brickX = brickOffsetLeft + column * (brickWidth + brickPadding);
+                var brickY = brickOffsetTop + row * (brickHeight + brickPadding);
+                bricks[column][row].x = brickX;
+                bricks[column][row].y = brickY;
 
+                // Canvasにブロックを描画
+                drawSquare(brickX, brickY, brickWidth, brickHeight, "#0095DD");
+            }
+        }
+    }
+
+}
 
 
 // 丸を描画するメソッド
