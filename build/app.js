@@ -1,72 +1,96 @@
 
-// requireについて
-// https://www.sejuku.net/blog/66950
-// require('css/app.css');
 
+//html内で定義した、任意のcanvas要素のIDを取得
 var canvas = document.getElementById("myCanvas");
+
+// canvas要素が持つgetContext()メソッドを実行し、
+// グラフィック描画のためのメソッドやプロパティを持つオブジェクトを取得する。
+// 引数を"2d"とすることで2Dグラフィックの描画に特化した
+// メソッドやプロパティを持つオブジェクトを取得し、定数ctxに格納する。
 var ctx = canvas.getContext("2d");
 
-var x = canvas.width / 2;
-var y = canvas.height - 30;
+// ボール関連の変数
+var x = canvas.width / 2;       // 位置(X方向)
+var y = canvas.height - 30;     // 位置(Y方向)
+var dx = 2;                     // 単位時間あたりの移動量(X方向)
+var dy = -2;                    // 単位時間あたりの移動量(Y方向)
+var ballRadius = 10;            // 半径
 
-var dx = 2;
-var dy = -2;
+// パドル関連の変数
+var paddleX = 10;               // 位置
+var paddleWidth = 100;          // 幅
+var paddleHeight = 5;           // 高さ
 
-var ballRadius = 10;
+// ブロック関連の変数
+var brickRowCount = 3;          // 行数
+var brickColumnCount = 5;       // 列数
+var brickWidth = 75;            // 幅
+var brickHeight = 20;           // 高さ
+var brickPadding = 10;          // パドル間の距離
+var brickOffsetTop = 30;        // 始点(Y軸方向)
+var brickOffsetLeft = 30;       // 始点(X軸方向)
 
-var paddleX = 10;
-var paddleWidth = 100;      
-var paddleHeight = 5;
-
-var brickRowCount = 3;
-var brickColumnCount = 5;
-var brickWidth = 75;
-var brickHeight = 20;
-var brickPadding = 10;
-var brickOffsetTop = 30;
-var brickOffsetLeft = 30;
-
-// それぞれのブロックの位置を保存する配列を生成
+// ブロックそれぞれの情報を格納する為の配列を定義
 var bricks = [];
 for(var column = 0; column < brickColumnCount; column++)
 {
     bricks[column] = [];
-
     for(var row = 0; row < brickRowCount; row++)
     {
         bricks[column][row] = { x: 0, y: 0, status: 1};
     }
 }
 
-var interval = setInterval(draw, 10);
+
+// draw関数の処理をintervalCycleTime[ms]の間隔で繰り返す
+var intervalCycleTime = 10;                             //setIntervalの間隔[ms]
+var interval = setInterval(draw, intervalCycleTime);
 
 // 画面描写の関数
 function draw()
 {
+    // キーを押下した際、定義したキーであれば、所定の処理を行う
     addEventListener("keydown", keydownfunc);
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);   // Canvas全体の描画をクリア
-    drawBall();     // Canvasにボールを描画
-    drawSquare(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight, "#0095DD");   // Canvasにパドルを描画
+    // Canvas全体の描画をリセット
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    drawbricks();    // Canvasにブロックを描画する処理
+    // Canvasにボールを描画
+    drawBall();
 
-    // ボールとブロックの衝突をチェックする処理
-    for(column = 0; column < brickColumnCount; column++)
+    // Canvasにパドルを描画
+    drawPaddle();
+
+    // Canvasにブロックを描画する処理
+    drawbricks();
+
+    // ボールが何かと衝突した際の処理
+    collisionDetection();
+}
+
+
+
+// ボールとブロックの衝突をチェックする処理　"column >> c"　"row >> r" と表現する
+function collisionDetection()
+{
+    // ボールとブロックの衝突した際の処理
+    // "column >> c"　"row >> r" と表現する
+    for(c = 0; c < brickColumnCount; c++)
     {
-        for(row = 0; row < brickRowCount; row++)
+        for(r = 0; r < brickRowCount; r++)
         {
             // ブロックの上辺もしくは下辺に衝突した場合　>>　ボールの進行方向を反転(Y方向)
-            if(x > bricks[column][row].x && x < bricks[column][row].x + brickWidth && y > bricks[column][row].y && y <  bricks[column][row].y + brickHeight)
+            if(x > bricks[c][r].x && x < (bricks[c][r].x + brickWidth) && y > bricks[c][r].y && y <  (bricks[c][r].y + brickHeight) && bricks[c][r].status == 1)
             {
-                    dy = -dy;
-                    bricks[column][row].status = 0
+                dy = -dy;
+                bricks[c][r].status = 0
             }
         }
-
     }
 
-    if(y + dy < ballRadius)    //y方向でcanvasの端にぶつかると、進行方向を変える
+    // ボールとcanvasの端もしくはパドルの衝突した際の処理
+    // ボールがcanvasの上辺、左辺、右辺もしくはパドルにぶつかった場合、進行方向を変える
+    if(y + dy < ballRadius)
     {
         dy = -dy;
     }
@@ -78,26 +102,25 @@ function draw()
         }
         else
         {
-            // デバッグ中のみ使用　最後は修正する
-            dy = -dy;
-            // alert("GAME OVER");
-            // document.location.reload();
-            // clearInterval(interval);
-        }
-        
-    }
+            // ↓↓ ＊デバッグ中のみ使用　最後は削除する
+            // dy = -dy;
 
-    // x方向でcanvasの端にぶつかると、進行方向を変える
+            // ↓↓　＊正式な処理
+            alert("GAME OVER");
+            document.location.reload();
+            clearInterval(interval);
+        }
+    }
     if (x + dx > canvas.width - ballRadius || x + dx < ballRadius)
     {
         dx = -dx;
     }
-
     x += dx;
     y += dy;
 
 }
 
+// ブロックを描画する関数
 function drawbricks()
 {
     for(column = 0; column < brickColumnCount; column++)
@@ -117,11 +140,15 @@ function drawbricks()
             }
         }
     }
-
 }
 
+// パドルを描画する関数
+function drawPaddle()
+{
+    drawSquare(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight, "#0095DD"); 
+}
 
-// 丸を描画するメソッド
+// 丸を描画する関数
 function drawBall() 
 {
     ctx.beginPath();
@@ -131,7 +158,7 @@ function drawBall()
     ctx.closePath();
 }
 
-// 四角を描画するメソッド
+// 四角を描画する関数
 function drawSquare(a_x, a_y, a_width, a_height, a_color)
 {
     ctx.beginPath();
@@ -156,32 +183,3 @@ function keydownfunc( event )
         if (paddleX < canvas.width - paddleWidth) paddleX +=20;
     } 
 }
-
-
-
-
-
-
-
-
-
-
-// Canvas上に図形を描写
-
-// ctx.beginPath();
-// ctx.rect(20, 40, 50, 50);
-// ctx.fillStyle = "#FF0000";
-// ctx.fill();
-// ctx.closePath();
-
-// ctx.beginPath();
-// ctx.arc(240, 160, 20, 0, Math.PI * 2, false);
-// ctx.fillStyle = "green";
-// ctx.fill();
-// ctx.closePath();
-
-// ctx.beginPath();
-// ctx.rect(160, 10, 100, 40);
-// ctx.strokeStyle = "raba(0, 0, 255, 0.5)";
-// ctx.stroke();
-// ctx.closePath();
