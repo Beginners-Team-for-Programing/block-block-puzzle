@@ -30,6 +30,9 @@ var brickPadding = 10;          // パドル間の距離
 var brickOffsetTop = 30;        // 始点(Y軸方向)
 var brickOffsetLeft = 30;       // 始点(X軸方向)
 
+// スコアを記録する変数
+var score = 0;
+
 // ブロックそれぞれの情報を格納する為の配列を定義
 var bricks = [];
 for(var column = 0; column < brickColumnCount; column++)
@@ -66,6 +69,9 @@ function draw()
 
     // ボールが何かと衝突した際の処理
     collisionDetection();
+
+    // スコアは最新の状態に保つ
+    drawScore();
 }
 
 
@@ -84,6 +90,7 @@ function collisionDetection()
             {
                 dy = -dy;
                 bricks[c][r].status = 0
+                score++;
             }
         }
     }
@@ -120,6 +127,14 @@ function collisionDetection()
 
 }
 
+// スコア表示を作成し更新するための関数
+function drawScore()
+{
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#0095DD";
+    ctx.fillText("Score: "+score, 8, 20); //キャンバス上に配置される文章設定
+}
+
 // ブロックを描画する関数
 function drawbricks()
 {
@@ -145,11 +160,11 @@ function drawbricks()
 // パドルを描画する関数
 function drawPaddle()
 {
-    drawSquare(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight, "#0095DD"); 
+    drawSquare(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight, "#0095DD");
 }
 
 // 丸を描画する関数
-function drawBall() 
+function drawBall()
 {
     ctx.beginPath();
     ctx.arc(x, y, ballRadius, 0, Math.PI * 2, false);
@@ -181,5 +196,5 @@ function keydownfunc( event )
     if (key_code == 39)
     {
         if (paddleX < canvas.width - paddleWidth) paddleX +=20;
-    } 
+    }
 }
