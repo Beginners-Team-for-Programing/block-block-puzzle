@@ -12,8 +12,8 @@ var ctx = canvas.getContext("2d");
 // ボール関連の変数
 var x = canvas.width / 2;       // 位置(X方向)
 var y = canvas.height - 30;     // 位置(Y方向)
-var dx = 2;                     // 単位時間あたりの移動量(X方向)
-var dy = -2;                    // 単位時間あたりの移動量(Y方向)
+var dx = 5;                     // 単位時間あたりの移動量(X方向)
+var dy = -5;                    // 単位時間あたりの移動量(Y方向)
 var ballRadius = 10;            // 半径
 
 // パドル関連の変数
@@ -91,6 +91,12 @@ function collisionDetection()
                 dy = -dy;
                 bricks[c][r].status = 0
                 score++;
+
+                if(score == brickRowCount * brickColumnCount)
+                {
+                    alert("YOU WIN, CONGRATULATIONS!!");
+                    document.location.reload();
+                }
             }
         }
     }
