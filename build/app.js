@@ -32,6 +32,8 @@ var brickOffsetLeft = 30;       // 始点(X軸方向)
 
 // スコアを記録する変数
 var score = 0;
+//ライフを与える
+var lives = 3;
 
 // ブロックそれぞれの情報を格納する為の配列を定義
 var bricks = [];
@@ -72,6 +74,9 @@ function draw()
 
     // スコアは最新の状態に保つ
     drawScore();
+
+    //ライフを追加
+    drawLives();
 }
 
 
@@ -113,15 +118,24 @@ function collisionDetection()
         {
             dy = -dy;
         }
-        else
-        {
+        else {
             // ↓↓ ＊デバッグ中のみ使用　最後は削除する
             // dy = -dy;
 
             // ↓↓　＊正式な処理
-            alert("GAME OVER");
-            document.location.reload();
-            clearInterval(interval);
+            lives--;
+            if (!lives) {
+                alert("GAME OVER");
+                document.location.reload();
+                clearInterval(interval);
+            }
+            else {
+                x = canvas.width / 2;
+                y = canvas.height - 30;
+                dx = 3;
+                dy = -3;
+                paddleX = (canvas.width - paddleWidth) / 2;
+            }
         }
     }
     if (x + dx > canvas.width - ballRadius || x + dx < ballRadius)
@@ -139,6 +153,13 @@ function drawScore()
     ctx.font = "16px Arial";
     ctx.fillStyle = "#0095DD";
     ctx.fillText("Score: "+score, 8, 20); //キャンバス上に配置される文章設定
+}
+
+function drawLives()
+{
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#0095DD";
+    ctx.fillText("Lives: "+lives, canvas.width - 65, 20); 
 }
 
 // ブロックを描画する関数
