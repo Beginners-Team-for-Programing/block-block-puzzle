@@ -57,6 +57,9 @@ function draw()
     // キーを押下した際、定義したキーであれば、所定の処理を行う
     addEventListener("keydown", keydownfunc);
 
+    // マウスの動作を監視する
+    addEventListener("mousemove", mouseMoveHandler, false);
+
     // Canvas全体の描画をリセット
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -79,7 +82,13 @@ function draw()
     drawLives();
 }
 
-
+// パドルの動きをマウスの動きと紐付ける
+function mouseMoveHandler(e) {
+    var relativeX = e.clientX - canvas.offsetLeft;
+    if(relativeX > 0 && relativeX < canvas.width) {
+        paddleX = relativeX - paddleWidth/2;
+    }
+}
 
 // ボールとブロックの衝突をチェックする処理　"column >> c"　"row >> r" と表現する
 function collisionDetection()
@@ -159,7 +168,7 @@ function drawLives()
 {
     ctx.font = "16px Arial";
     ctx.fillStyle = "#0095DD";
-    ctx.fillText("Lives: "+lives, canvas.width - 65, 20); 
+    ctx.fillText("Lives: "+lives, canvas.width - 65, 20);
 }
 
 // ブロックを描画する関数
